@@ -12,24 +12,24 @@ export function formatPokemonName(name: string): string {
 
 export function getTypeColor(type: string): string {
   const typeColors: Record<string, string> = {
-    normal: '#A8A878',
-    fire: '#F08030',
-    water: '#6890F0',
-    electric: '#F8D030',
-    grass: '#78C850',
-    ice: '#98D8D8',
-    fighting: '#C03028',
-    poison: '#A040A0',
-    ground: '#E0C068',
-    flying: '#A890F0',
-    psychic: '#F85888',
-    bug: '#A8B820',
-    rock: '#B8A038',
-    ghost: '#705898',
-    dragon: '#7038F8',
-    dark: '#705848',
-    steel: '#B8B8D0',
-    fairy: '#EE99AC',
+    normal: 'bg-gray-400',
+    fire: 'bg-red-500',
+    water: 'bg-blue-500',
+    electric: 'bg-yellow-400',
+    grass: 'bg-green-500',
+    ice: 'bg-cyan-400',
+    fighting: 'bg-red-700',
+    poison: 'bg-purple-500',
+    ground: 'bg-yellow-600',
+    flying: 'bg-indigo-400',
+    psychic: 'bg-pink-500',
+    bug: 'bg-lime-500',
+    rock: 'bg-yellow-700',
+    ghost: 'bg-purple-700',
+    dragon: 'bg-indigo-700',
+    dark: 'bg-gray-800',
+    steel: 'bg-gray-500',
+    fairy: 'bg-pink-400',
   };
-  return typeColors[type] || '#68A090';
+  return typeColors[type] || 'bg-teal-500';
 }

@@ -9,9 +9,10 @@ import { useState } from 'react';
 
 interface PokemonCardProps {
   pokemon: Pokemon;
+  onClick?: (pokemon: Pokemon) => void;
 }
 
-export function PokemonCard({ pokemon }: PokemonCardProps) {
+export function PokemonCard({ pokemon, onClick }: PokemonCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -24,8 +25,15 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
     setImageLoaded(true);
   };
 
+  const handleClick = () => {
+    onClick?.(pokemon);
+  };
+
   return (
-    <Card className="group transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
+    <Card 
+      className="group transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 border-0 bg-white/90 backdrop-blur-sm overflow-hidden cursor-pointer"
+      onClick={handleClick}
+    >
       <CardContent className="p-6">
         <div className="text-center">
           {/* Pokemon ID */}
