@@ -10,36 +10,46 @@ import { Pokemon } from '@/types/pokemon';
 import { RefreshCw, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+ 
 
 export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   const { pokemon: allPokemon, isLoading, error } = usePokemonList();
 
-  // Filter Pokemon based on search query
+  // Filter Pokemon based on favorites and search query
   const filteredPokemon = useMemo(() => {
-    if (!allPokemon || !searchQuery.trim()) {
-      return allPokemon;
+    if (!allPokemon) return allPokemon;
+
+    let result = allPokemon;
+
+    // Favorites filter
+    if (showFavoritesOnly) {
+      result = result.filter((p) => {
+        try {
+          return localStorage.getItem(`favorite:${p.id}`) === '1';
+        } catch {
+          return false;
+        }
+      });
     }
 
-    const query = searchQuery.toLowerCase();
-    return allPokemon.filter((pokemon) => {
-      // Search by name
-      if (pokemon.name.toLowerCase().includes(query)) {
-        return true;
-      }
+    // Search filter
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return result;
 
-      // Search by abilities (if loaded)
+    return result.filter((pokemon) => {
+      if (pokemon.name.toLowerCase().includes(q)) return true;
       if (pokemon.abilities) {
         return pokemon.abilities.some((ability) =>
-          ability.ability.name.toLowerCase().includes(query)
+          ability.ability.name.toLowerCase().includes(q)
         );
       }
-
       return false;
     });
-  }, [allPokemon, searchQuery]);
+  }, [allPokemon, searchQuery, showFavoritesOnly]);
 
   const handlePokemonClick = (pokemon: Pokemon) => {
     router.push(`/pokemon/${pokemon.id}`);
@@ -88,9 +98,14 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-6">
-          <SearchBar onSearch={setSearchQuery} />
+        {/* Search with embedded Favourited toggle */}
+        <div className="mx-auto mb-6 max-w-2xl">
+          <SearchBar
+            onSearch={setSearchQuery}
+            className="w-full"
+            favoritesOnly={showFavoritesOnly}
+            onToggleFavoritesOnly={setShowFavoritesOnly}
+          />
         </div>
 
         {isLoading ? (
@@ -110,14 +125,15 @@ export default function Home() {
                     {searchQuery && (
                       <span> matching &ldquo;{searchQuery}&rdquo;</span>
                     )}
+                    {showFavoritesOnly && ' in favorites'}
                   </>
                 ) : (
                   <>
                     Showing{' '}
                     <span className="font-semibold text-blue-600">
-                      {allPokemon?.length || 0}
+                      {filteredPokemon?.length ?? 0}
                     </span>{' '}
-                    Pokémon
+                    Pokémon{showFavoritesOnly && ' (favorites only)'}
                   </>
                 )}
               </p>
@@ -127,7 +143,11 @@ export default function Home() {
             {filteredPokemon && filteredPokemon.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {filteredPokemon.map((pokemon) => (
-                  <PokemonCard key={pokemon.id} pokemon={pokemon} />
+                  <PokemonCard 
+                    key={pokemon.id} 
+                    pokemon={pokemon} 
+                    onClick={handlePokemonClick}
+                  />
                 ))}
               </div>
             ) : (
